@@ -3,13 +3,13 @@ const bcryptjs = require("bcryptjs");
 const router = require("express").Router();
 
 const Users = require("../users/users-model.js");
-const { isValid } = require("../users/users-service.js");
+const { isValid } = require("../users/users-service");
 
 router.post("/register", (req, res) => {
   const credentials = req.body;
 
   if (isValid(credentials)) {
-    const rounds = process.env.BCRYPT_ROUNDS || 16;
+    const rounds = process.env.BCRYPT_ROUNDS || 12;
 
     // hash the password
     const hash = bcryptjs.hashSync(credentials.password, rounds);
@@ -29,7 +29,7 @@ router.post("/register", (req, res) => {
   } else {
     res.status(400).json({
       message:
-        "please provide username and password and the password shoud be alphanumeric",
+        "please provide username and password and the password should be alphanumeric",
     });
   }
 });
@@ -46,7 +46,7 @@ router.post("/login", (req, res) => {
           req.session.loggedIn = true;
           req.session.user = user;
 
-          res.status(200).json({ message: "Welcome to our API" });
+          res.status(200).json({ message: `Welcome ${user.username}` });
         } else {
           res.status(401).json({ message: "Invalid credentials" });
         }
